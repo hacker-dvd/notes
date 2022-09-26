@@ -38,3 +38,12 @@ c: 字符     k: KB     M: M     G: GB
 `find ./ -maxdepth 1 -name .py`：在搜索深度为1的情况下，输出所有的 py 文件
 
 `find ./ -size +20M -size -50M`：搜索当前目录下大小大于20MB小于50MB的文件
+
+**对find命令找出的目标执行操作：**
+
+`find ./ -name '*.py' -exec ls -l {} \;`：将当前目录下的 python文件找出并打印其信息
+
+`find ./ -type l -exec rm -r {} \;`：将当前目录下的所有软链接文件找出并删除
+
+注：-exec 代表对 find 命令执行的结果进行操作， {} 代表 find 找出的命令的集合，; 代表语句的结束，\ 是对 ; 的转义
+
