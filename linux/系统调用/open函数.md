@@ -5,6 +5,8 @@
 1. `int open (const char *pathname, int flags);`
 2. `int open (const char *pathname, int flags, mode_t mode);`
 
+返回值为一个文件描述符
+
 flag 常用参数：
 
 1. `O_RDONLY`：只读
@@ -57,3 +59,16 @@ int main() {
 }
 ```
 
+**文件描述符**
+
+形式：一个 int 型整数
+
+`STDIN_FILENO`：对应的数为0
+
+`STDOUT_FILENO`：对应的数为1
+
+`STDERR_FILENO`:对应的数为2
+
+文件描述符的最大值为1023，换言之，一个进程所能打开的文件数的最大值为1024
+
+每次打开文件，对应的文件描述符一定是所有可用的文件描述符的最小值
