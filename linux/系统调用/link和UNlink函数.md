@@ -1,6 +1,6 @@
 ### link函数
 
-作用：为文件创建一个链接
+作用：为文件创建一个硬链接
 
 函数原型：
 
@@ -22,5 +22,23 @@ int link(const char *oldpath, const char *newpath);
 ```c
 #include <unistd.h>
 int unlink(const char *pathname);
+```
+
+`readlink xxx`读取软链接文件内容(链接目标)
+
+**readlink 函数**
+
+```c
+#include <unistd.h>
+ssize_t readlink(const char *pathname, char *buf, size_t bufsiz);  // 将链接文件的内容读到 buf 缓冲区中
+```
+
+**rename 函数**
+
+作用：重命名一个文件
+
+```c
+#include <stdio.h>
+int rename(const char *oldpath, const char *newpath);
 ```
 
