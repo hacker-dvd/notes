@@ -178,6 +178,9 @@ test:$(obj)
 	gcc $^ -o $@
 %.o:%.c
 	gcc -c $< -o $@
+# 可以使用静态模式生成 obj：
+# $(obj):%.o:%.c
+# 		gcc -c $< -o $@
 clean:
 	-rm -rf $(obj)
 .PHONY: clean ALL
