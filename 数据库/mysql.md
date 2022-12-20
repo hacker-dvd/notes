@@ -78,6 +78,33 @@
 + 常见的约束分类：
 
     <img src="https://raw.githubusercontent.com/hacker-dvd/notes/master/img/image-20221218162115746.png" alt="image-20221218162115746" style="zoom:67%;" />
+    
++ 具有外键的表称为子表，外键关联的表称为父表
+
+    外键形式：
+
+    1. 创建表时的写法`[constraint] [外键名称] foreign key(外键字段名) references 主表(主表列名)`
+    2. 修改表时的写法：`alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名)`
+
+    删除外键：`alter table 表名 drop foreign key 外键名称`
+
+    若父表删除的外键中在子表中存在关联关系，则不能完成删除操作
+
+    **外键约束的删除 / 更新行为：**
+
+    <img src="https://raw.githubusercontent.com/hacker-dvd/notes/master/img/image-20221218210618866.png" alt="image-20221218210618866" style="zoom:67%;" />
+
+    **注意：NO ACTION 或者 RESTRICT 是默认行为**
+
+    添加外键时指定以 cascade 方式删除：
+
+    `alter table 表名 add constraint 外键名称 foreign key (外键字段) references 主表名(主表字段名) on update cascade on delete cascade;`
+
+
+
+
+
+
 
 
 

@@ -170,6 +170,177 @@ DCL 示例：
 
     `create user 'lc'@'%' identified by '12345'`
 
+#### 多表关系
+
++ 一对多关系(一个员工只能在一个部门内，但一个部门可以有多个学生)
+
+    **实现：在多的一方建立外键，指向一的一方的主键**
+
++ 多对多关系(一个学生可以选择多门课程，一门课程也可以被多个学生选择)
+
+    **实现：建立第三张中间表，中间表至少包含两个外键，分别关联两方主键**
+
++ 一对一关系(用于单表拆分，将一张表的基础字段放在一张表中，其他详情字段放在另一张表中)
+
+    **实现：在任意一方加入主键，关联另一方的主键，并且设置外键为唯一的(unique)**
+
+#### 多表查询
+
++ 多表查询分类
+
+    1. 连接查询
+
+        1.1. 内连接：相当于查询 A，B 交集部分数据
+
+        1.2. 外连接：
+
+        1.2.1. 左外连接：查询左表中的所有数据，以及两张表交集部分数据
+
+        1.2.2. 右外连接：查询游标中的所有数据，以及两张表交集部分数据
+
+        1.3. 自连接：当前表与自身的连接查询，自连接必须使用表别名
+
+    2. 子查询
+
++ 内连接(查询 A，B 交集部分)
+
+    隐式内连接：`select 字段列表 from 表1, 表2 where 条件`
+
+    显式内连接：`select 字段列表 from 表1 [inner] join 表2 on 连接条件`
+
+    例：查询每一个员工的姓名，及关联部门(dept)的名称
+
+    隐式内连接实现：`select e.name, d.name from emp e, dept d where e.dept_id == d.id`
+
+    显式内连接实现：`select e.name, d.name from emp e inner join dept d on e.dept_id == d.id`
+
++ 外连接
+
+    1. 左外连接：`select 字段列表 from 表1 left [outer] join 表2 on 条件`
+
+        例：查询 emp 表的所有信息和对应的部门信息：
+
+        `select e.*, dept.name from emp e left outer join dept d on e.dept_id == d.id`
+
+    2. 右外连接：`select 字段列表 from 表1 right [outer] join 表2 on 条件`
+
+        例：查询 dept 表的所有信息和对应的员工信息：
+
+        `select d.*, e.* from emp e right outer join dept d on e.dept_id == d.id`
+
+    **注意：右外连接能实现的通过左外连接都能实现，只需要将左表和右表的顺序交换即可**
+
++ 自连接
+
+    自连接查询，可以是内连接查询，也可以外连接查询
+
+    语法：`select 字段列表  from 表A 别名A join 表A 别名B on 条件`
+
+    例：
+
+    1. 查询员工及其所属领导的名字：`select a.name, b.name from emp a, emp b where a.managerid = b.id;`
+
+    2. 查询员工及其所属领导的名字，如果没有领导，也许要查询出来：
+
+        `select a.name '员工', b.name '领导' from emp a left outer join emp b on a.managerid = b.id;`
+
++ 联合查询(union)
+
+    对于联合查询，就是把多次查询的结果合并起来，形成一个新的结果集
+
+    语法：`select 字段列表 from 表A ... union [all] select 字段列表 from 表B ...`
+
+    **注意：假如加上 all 关键字，则会将查询的结果直接拼接起来，但假如去掉 all 关键字，则会对查询的结果进行去重处理**
+
+    例：将薪资低于 5000 的员工，和年龄大于 50 岁的员工全部查询出来
+
+    `select * from emp where salary < 5000 union select * from emp where age > 50;`
+
+    **注意：对于联合查询来说，多张表的列数必须保持一致，字段类型也需要保持一致**
+
++ 子查询
+
+    sql 语句中嵌套了 select 语句，称为嵌套查询，又称子查询
+
+    `select * from t1 where column1 = (select column1 from t2);`
+
+    子查询外部的语句可以是 insert / update / delete / select 中的任意一个
+
+    根据子查询结果的不同，分为：
+
+    1. 标量子查询(子查询的结果为单个值)
+    2. 列子查询(子查询结果为一列)
+    3. 行子查询(子查询结果为一行)
+    4. 表子查询(子查询结果为多行多列)
+
+    根据子查询的位置，分为：where 之后，from 之后，select 之后
+
++ 列子查询：
+
+    <img src="https://raw.githubusercontent.com/hacker-dvd/notes/master/img/image-20221219104815339.png" alt="image-20221219104815339" style="zoom:67%;" />
+
+    例：
+
+    1. 查询销售部和市场部的所有员工信息：
+
+        `select * from emp where dept_id in (select id from dept where name = '销售部' or name = '市场部');`
+
+    2. 查询比财务部所有人工资都高的员工信息
+
+        `select * from emp where salary > all(select salary from emp where dept_id = (select id from dept where name = '财务部'))`
+
++ 行子查询
+
+    例：查询与张无忌的薪资及直属领导相同的员工信息
+
+    `select * from emp where (salary, managerid) = (select salary, managerid from emp where name = '张无忌');`
+
++ 表子查询
+
+    主要的操作符为 IN
+
+    例：查询与A，B的职位和薪资相同的员工信息
+
+    `select * from emp where (job, salary) in (select job, salary from emp where name = 'A' or name = 'B');`
+
++ 查询案例：
+
+    1. 查询年龄小于 30  岁的员工的姓名，年龄，职位，部门信息(显式内连接实现)
+
+        `select e.name, e.age, e.job, d.name from emp e inner join dept d on e.dept_id = d.id where e.age < 30;`
+
+    2. 查询拥有员工的部门 id，部门名称
+
+        `select distinct  d.id, d.name from emp e, dept d where e.dept_id = d.id;`
+
+    3. 查询所有年龄大于 40 岁的员工，及其归属的部门名称，如果员工没有分配部门，也需要展示出来
+
+        `select e.*, d.name from emp e left outer join dept d on e.dept_id = d.id where e.age > 40;`
+
+    4. 查询所有员工的工资等级
+
+        `select e.*, s.grade from emp e, salgrade s where e.salary >= s.losal and e.salary <= s.hisal;`
+
+    5. 查询研发部所有员工信息及工资等级
+
+        `select e.*, s.grade from emp e, dept d, salgrade s where e.dept_id = d.id and (e.salary between s.losal and s.hisal) and d.name = '研发部';`
+
+    6. 查询低于本部门平均工资的员工信息
+
+        `select * from emp e2 where e2.salary < (select avg(e1.salary) from emp e1 where e1.dept_id = e2.dept_id);`
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
