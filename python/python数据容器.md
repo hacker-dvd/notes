@@ -28,6 +28,19 @@
 
 + 统计某一个元素在列表中的数量：`列表.count(元素)`
 
++ 列表的 sort 方法：`列表.sort(key = 选择排序依据的函数, reverse = True | False)`
+
+    参数 key，是要求传入一个函数，表示将列表的每一个元素都传入函数中，返回排序的依据
+
+    参数 reverse，是否反转排序结果，True 表示降序，False 表示升序
+
+    ```python
+    my_list = ["a", 33, ["b", 55], ["c", 11]]
+    my_list.sort(key = lambda element: element[1], reverse = True)
+    ```
+
+    
+
 #### 元组
 
 + **当存储的数据不希望被修改时，就需要使用元组**
@@ -68,7 +81,7 @@
 
     ```python
     a = "  abc  "
-    b = a.strip()
+    b = a.strip()  # 不加参数会取出开头和结尾的换行符
     print(b)  # 输出结果为"abc"
     a = "abc123cba"
     b = a.strip("abc")
