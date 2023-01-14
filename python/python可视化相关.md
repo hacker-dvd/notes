@@ -270,5 +270,81 @@ timeline.add_schema(
 timeline.render()
 ```
 
+数据销售额统计：
+
+```python
+import json
+from pyecharts.charts import Bar
+from pyecharts.options import LabelOpts, TitleOpts, InitOpts
+from pyecharts.globals import ThemeType
+
+class Record:
+    def __init__(self, date, order_id, money, province):
+        self.date = date
+        self.order_id = order_id
+        self.money = money
+        self.province = province
+    def __str__(self):
+        return f"{self.date}, {self.order_id}, {self.money}, {self.province}"
+
+class FileReader:
+    def read_data(self) -> list[Record]:
+        pass
+
+class TextFileReader(FileReader):
+    def __init__(self, path):
+        self.path = path
+    def read_data(self) -> list[Record]:
+        f = open(self.path, "r", encoding="UTF-8")
+        record_list: list[Record] = []
+        for line in f.readlines():
+            line = line.strip()
+            data_list = line.split(",")
+            record = Record(data_list[0], data_list[1], int(data_list[2]), data_list[3])
+            record_list.append(record)
+
+        f.close()
+        return record_list
+
+class JsonFileReader(FileReader):
+    def __init__(self, path):
+        self.path = path
+    def read_data(self) -> list[Record]:
+        f = open(self.path, "r", encoding="UTF-8")
+        record_list: list[Record] = []
+        for line in f.readlines():
+            data_dict = json.loads(line)
+            record = Record(data_dict["date"], data_dict["order_id"], int(data_dict["money"]), data_dict["province"])
+            record_list.append(record)
+
+        f.close()
+        return record_list
+
+if __name__ == '__main__':
+    text_file_reader = TextFileReader("D:/BaiduNetdiskDownload/2011年1月销售数据.txt")
+    json_file_reader = JsonFileReader("D:/BaiduNetdiskDownload/2011年2月销售数据JSON.txt")
+    jan_data: list[Record] = text_file_reader.read_data()  # 1 月份的数据
+    feb_data: list[Record] = json_file_reader.read_data()  # 2 月份的数据
+    all_data: list[Record] = jan_data + feb_data  # 将两个月数据合并
+
+    data_dict = {}
+    # 计算每个日期对应的销售额之和
+    for record in all_data:
+        if record.date in data_dict.keys():
+            data_dict[record.date] += record.money
+        else:
+            data_dict[record.date] = record.money
+
+    bar = Bar(init_opts=InitOpts(theme=ThemeType.LIGHT))
+    bar.add_xaxis(list(data_dict.keys()))
+    bar.add_yaxis("销售额", list(data_dict.values()), label_opts=LabelOpts(is_show=False))
+
+    bar.set_global_opts(
+        title_opts=TitleOpts(title="每日销售额", pos_left="center", pos_bottom="1%")
+    )
+
+    bar.render()
+```
+
 
 
