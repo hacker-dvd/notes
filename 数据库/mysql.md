@@ -100,6 +100,50 @@
 
     `alter table 表名 add constraint 外键名称 foreign key (外键字段) references 主表名(主表字段名) on update cascade on delete cascade;`
 
+#### python 操作 mysql
+
+首先，python 操作 MySQL 需要安装 pymysql 和 cryptography 两个包
+
+pymysql 在执行数据的插入或其他产生数据更改的 sql 语句是，默认是需要提交更改的，即需要通过代码确认这种更改行为
+
+通过链接对象.commit()即可确认此行为
+
+```python
+# 示例代码
+from pymysql import Connection
+conn = Connection(
+    host="localhost",  # 主机名(IP)
+    port=3306,
+    user="root",
+    password="sqsyq402"
+    # autocommit="True"
+    # 如果设置了自动提交选项，那么就不需要执行 conn.commit()
+)
+# print(conn.get_server_info())  # 获取数据库的版本信息
+cursor = conn.cursor()  # 获取游标对象
+conn.select_db("school")  # 选择数据库
+
+# 使用游标对象，执行 sql 语句
+# cursor.execute("create table test_mysql(id int)")
+cursor.execute("select * from test_mysql")
+results: tuple = cursor.fetchall()  # 获取查询结果，将其封装到一个元组内
+# 这里查询出来的结果是一个元组，内部每一行也都是元组
+for r in results:
+    print(r)
+
+cursor.execute("insert into test_mysql values (9)")
+conn.commit()  # 通过 commit 提交确认
+
+cursor.close()
+conn.close()
+```
+
+
+
+
+
+
+
 
 
 
