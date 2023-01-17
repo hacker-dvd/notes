@@ -2,7 +2,7 @@
 
     进程之间要想进行网络通信需要 socket
 
-    基本步骤：
+    socket 服务端基本步骤：
 
     1. 创建 socket 对象
 
@@ -74,6 +74,51 @@
     # 关闭链接
     conn.close()
     socket_server.close()
+    ```
+
++ socket 客户端编程
+
+    基本步骤：
+
+    1. 创建 socket 对象
+
+        ```python
+        import socket
+        socket_client = socket.socket()
+        ```
+
+    2. 连接到服务端：`socket_client.connect(("localhost", 8888))`
+
+    3. 发送消息并接收返回消息
+
+        ```python
+        while True:   # 通过无限循环来确保持续的发送消息给服务器
+            send_msg = input("请输入要发送的消息")
+            if send_msg == 'exit':
+                break
+            socket_client.send(send_msg.encode("UTF-8"))
+            
+            recv_data = socket_client.recv(1024)  # 阻塞式方法
+            print("服务端回复的信息为：", recv_data.decode("UTF-8"))
+        ```
+
+    4. 关闭连接：`socket_client.close()`
+
+    示例代码：
+
+    ```python
+    import socket
+    socket_client = socket.socket()
+    socket_client.connect(("localhost", 8888))
+    while True:
+        send_msg = input("请输入发送给服务端的信息")
+        if send_msg == 'exit':
+            break
+        socket_client.send(send_msg.encode("UTF-8"))
+        recv_data = socket_client.recv(1024)
+        print(f"服务端返回的信息是{recv_data.decode('UTF-8')}")
+    
+    socket_client.close()
     ```
 
     
